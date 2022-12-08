@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add new hotel</title>
+  </head>
+  <body>
+    <h1>Add New Hotel</h1>
+    <form action="/hotels" method="POST">
+      <div>
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="hotel[title]" />
+      </div>
+      <div>
+        <label for="location">Location:</label>
+        <input type="text" id="location" name="hotel[location]" />
+      </div>
+      <button>Add Campground</button>
+    </form>
+    <div>
+      <a href="/hotels">Back</a>
+    </div>
+  </body>
+</html>
