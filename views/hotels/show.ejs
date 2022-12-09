@@ -1,13 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%= hotel.title %> details</title>
-  </head>
-  <body>
-    <h1><%= hotel.title %></h1>
+<% layout('./layouts/boilerplate') %>
+<h1><%= hotel.title %></h1>
     <h2><%= hotel.location %></h2>
     <p>
       <a href="/hotels/<%= hotel._id %>/edit">Edit Hotel</a>
@@ -17,6 +9,4 @@
         <button>Delete</button>
       </form>
     </p>
-    <a href="/hotels">Back to all Hotels</a>
-  </body>
-</html>
+<a href="/hotels">Back to all Hotels</a>
