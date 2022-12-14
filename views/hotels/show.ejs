@@ -1,12 +1,36 @@
 <% layout('./layouts/boilerplate') %>
-<h1><%= hotel.title %></h1>
-    <h2><%= hotel.location %></h2>
-    <p>
-      <a href="/hotels/<%= hotel._id %>/edit">Edit Hotel</a>
-    </p>
-    <p>
-      <form action="/hotels/<%= hotel._id %>?_method=DELETE " method="POST">
-        <button>Delete</button>
-      </form>
-    </p>
-<a href="/hotels">Back to all Hotels</a>
+<div class="row">
+  <div class="col-6 offset-3">
+    <div class="card">
+      <img
+        srcset="<%= hotel.image %> 2x"
+        src="<%= hotel.image %>"
+        class="card-img-top"
+        alt="..."
+      />
+      <div class="card-body">
+        <h5 class="card-title"><%= hotel.title %></h5>
+        <p class="card-text"><%= hotel.description %></p>
+      </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item"><%= hotel.location %></li>
+        <li class="list-group-item">$<%= hotel.price %>/night</li>
+      </ul>
+      <div class="card-body">
+        <a
+          href="/hotels/<%= hotel._id %>/edit"
+          class="card-link btn btn-warning"
+          >Edit Hotel</a
+        >
+        <form
+          class="d-inline"
+          action="/hotels/<%= hotel._id %>?_method=DELETE "
+          method="POST"
+        >
+          <button class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+    <a href="/hotels">Back to all Hotels</a>
+  </div>
+</div>
