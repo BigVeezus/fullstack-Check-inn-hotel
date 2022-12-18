@@ -2,7 +2,7 @@
 <div class="row">
   <h1 class="text-center">New Hotel</h1>
   <div class="col-6 offset-3">
-    <form action="/hotels" method="POST">
+    <form action="/hotels" method="POST" novalidate class="validated-form">
       <div class="mb-3">
         <label class="form-label" for="title">Title</label>
         <input
@@ -10,6 +10,7 @@
           type="text"
           id="title"
           name="hotel[title]"
+          required
         />
       </div>
       <div class="mb-3">
@@ -19,6 +20,7 @@
           type="text"
           id="location"
           name="hotel[location]"
+          required
         />
       </div>
       <div class="mb-3">
@@ -28,6 +30,7 @@
           type="text"
           id="image"
           name="hotel[image]"
+          required
         />
       </div>
       <div class="mb-3">
@@ -37,6 +40,7 @@
           type="text"
           id="description"
           name="hotel[description]"
+          required
         ></textarea>
       </div>
 
@@ -51,6 +55,7 @@
               aria-label="Amount (to the nearest dollar)"
               id="price"
               name="hotel[price]"
+              required
             />
             <span class="input-group-text">.00</span>
           </div>

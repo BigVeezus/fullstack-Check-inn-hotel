@@ -3,7 +3,12 @@
 <div class="row">
   <h1 class="text-center">Edit Hotel</h1>
   <div class="col-6 offset-3">
-    <form action="/hotels/<%= hotel._id %>?_method=PUT" method="POST">
+    <form
+      action="/hotels/<%= hotel._id %>?_method=PUT"
+      method="POST"
+      novalidate
+      class="validated-form"
+    >
       <div class="mb-3">
         <label class="form-label" for="title">Title</label>
         <input
@@ -12,6 +17,7 @@
           id="title"
           name="hotel[title]"
           value="<%= hotel.title %>"
+          required
         />
       </div>
       <div class="mb-3">
@@ -22,6 +28,7 @@
           id="location"
           name="hotel[location]"
           value="<%= hotel.location %>"
+          required
         />
       </div>
       <div class="mb-3">
@@ -32,6 +39,7 @@
           id="image"
           name="hotel[image]"
           value="<%= hotel.image %>"
+          required
         />
       </div>
       <div class="mb-3">
@@ -41,6 +49,7 @@
           type="text"
           id="description"
           name="hotel[description]"
+          required
         >
           <%= hotel.description %>
         </textarea>
@@ -58,13 +67,14 @@
               id="price"
               name="hotel[price]"
               value="<%= hotel.price %>"
+              required
             />
             <span class="input-group-text">.00</span>
           </div>
         </label>
       </div>
 
-      <button class="btn btn-info mb-3">Update Hotel</button>
+      <button class="btn btn-success mb-3">Update Hotel</button>
     </form>
     <div>
       <a href="/hotels/<%= hotel._id %>">Back</a>
