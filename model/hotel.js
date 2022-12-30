@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Review = require("./review");
 mongoose.set("strictQuery", false);
 const Schema = mongoose.Schema;
 
@@ -8,6 +9,22 @@ const hotelSchema = new Schema({
   price: Number,
   description: String,
   location: String,
+  reviews: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Review",
+    },
+  ],
+});
+
+hotelSchema.post("findOneAndDelete", async function (doc) {
+  if (doc) {
+    await Review.remove({
+      _id: {
+        $in: doc.reviews,
+      },
+    });
+  }
 });
 
 module.exports = mongoose.model("Hotel", hotelSchema);
