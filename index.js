@@ -104,6 +104,10 @@ app.get(
   catchAsync(async (req, res) => {
     const { id } = req.params;
     const hotel = await Hotel.findById(id).populate("reviews");
+    if (!hotel) {
+      req.flash("error", "Cannot find that hotel");
+      return res.redirect("/hotels");
+    }
     res.render("hotels/show", { hotel });
   })
 );
@@ -113,6 +117,10 @@ app.get(
   catchAsync(async (req, res) => {
     const { id } = req.params;
     const hotel = await Hotel.findById(id);
+    if (!hotel) {
+      req.flash("error", "Cannot find that hotel");
+      return res.redirect("/hotels");
+    }
     res.render("hotels/edit", { hotel });
   })
 );
@@ -156,6 +164,7 @@ app.delete(
   "/hotels/:id/reviews/:reviewId",
   catchAsync(async (req, res) => {
     const { id, reviewId } = req.params;
+    // console.log(reviewId);
     await Hotel.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
     await Review.findByIdAndDelete(reviewId);
     req.flash("success", "Deleted review!");
