@@ -6,12 +6,17 @@ const methodOverride = require("method-override");
 const mongoose = require("mongoose");
 const ejsMate = require("ejs-mate");
 const session = require("express-session");
+// const passport = require("passport");
 const flash = require("connect-flash");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
 const { hotelSchema, reviewSchema } = require("./schemas");
 const catchAsync = require("./utils/catchAsync");
+const { isLoggedIn } = require("./middleware");
 const ExpressError = require("./utils/ExpressError");
 const Hotel = require("./model/hotel");
 const Review = require("./model/review");
+const User = require("./model/user");
 
 mongoose.connect("mongodb://localhost:27017/check-inn", {
   useNewUrlParser: true,
@@ -31,7 +36,6 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
-app.use(flash());
 
 const sessionConfig = {
   secret: "bettersecret",
@@ -43,8 +47,18 @@ const sessionConfig = {
     maxAge: 1000 * 60,
   },
 };
+
 app.use(session(sessionConfig));
+app.use(flash());
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.use((req, res, next) => {
+  res.locals.currentUser = req.user;
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   next();
@@ -82,12 +96,13 @@ app.get(
   })
 );
 
-app.get("/hotels/new", (req, res) => {
+app.get("/hotels/new", isLoggedIn, (req, res) => {
   res.render("hotels/new");
 });
 
 app.post(
   "/hotels",
+  isLoggedIn,
   validateHotel,
   catchAsync(async (req, res, next) => {
     // if (!req.body.hotel) throw new ExpressError("Invalid Hotel Data", 404);
@@ -97,6 +112,58 @@ app.post(
     req.flash("success", "New hotel created!");
     res.redirect(`/hotels/${newHotel._id}`);
   })
+);
+
+app.get("/register", async (req, res) => {
+  res.render("users/register");
+});
+
+app.post(
+  "/register",
+  catchAsync(async (req, res) => {
+    try {
+      const { email, username, password } = req.body;
+      const user = new User({ email, username });
+      const registeredUser = await User.register(user, password);
+      // console.log(registerUser);
+      req.login(registeredUser, (err) => {
+        if (err) return next(err);
+        req.flash("success", "Welcome to Check-Inn");
+        res.redirect("/hotels");
+      });
+    } catch (e) {
+      req.flash("error", e.message);
+      res.redirect("register");
+    }
+  })
+);
+
+app.get("/login", (req, res) => {
+  res.render("users/login");
+});
+
+app.get("/logout", (req, res) => {
+  req.logout(function (err) {
+    if (err) {
+      req.flash("sucess", "Could not log you out");
+      return res.redirect("hotels");
+    }
+    req.flash("success", "You have been logged out.");
+    return res.redirect("/login");
+  });
+});
+
+app.post(
+  "/login",
+  passport.authenticate("local", {
+    failureFlash: true,
+    failureRedirect: "/login",
+  }),
+  (req, res) => {
+    const redirectUrl = req.session.returnTo || "hotels";
+    req.flash("success", "Welcome back");
+    res.redirect(redirectUrl);
+  }
 );
 
 app.get(
@@ -114,6 +181,7 @@ app.get(
 
 app.get(
   "/hotels/:id/edit",
+  isLoggedIn,
   catchAsync(async (req, res) => {
     const { id } = req.params;
     const hotel = await Hotel.findById(id);
@@ -127,6 +195,7 @@ app.get(
 
 app.put(
   "/hotels/:id",
+  isLoggedIn,
   validateHotel,
   catchAsync(async (req, res) => {
     const { id } = req.params;
@@ -138,6 +207,7 @@ app.put(
 
 app.delete(
   "/hotels/:id",
+  isLoggedIn,
   catchAsync(async (req, res) => {
     const { id } = req.params;
     await Hotel.findByIdAndDelete(id);
@@ -148,6 +218,7 @@ app.delete(
 
 app.post(
   "/hotels/:id/reviews",
+  isLoggedIn,
   validateReview,
   catchAsync(async (req, res) => {
     const hotel = await Hotel.findById(req.params.id);
@@ -162,6 +233,7 @@ app.post(
 
 app.delete(
   "/hotels/:id/reviews/:reviewId",
+  isLoggedIn,
   catchAsync(async (req, res) => {
     const { id, reviewId } = req.params;
     // console.log(reviewId);
