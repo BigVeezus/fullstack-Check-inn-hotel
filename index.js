@@ -12,7 +12,12 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const { hotelSchema, reviewSchema } = require("./schemas");
 const catchAsync = require("./utils/catchAsync");
-const { isLoggedIn } = require("./middleware");
+const {
+  isLoggedIn,
+  isAuthor,
+  validateHotel,
+  validateReview,
+} = require("./middleware");
 const ExpressError = require("./utils/ExpressError");
 const Hotel = require("./model/hotel");
 const Review = require("./model/review");
@@ -43,8 +48,8 @@ const sessionConfig = {
   saveUninitialized: true,
   cookie: {
     httpOnly: true,
-    expires: Date.now() + 1000 * 60,
-    maxAge: 1000 * 60,
+    expires: Date.now() + 1000 * 60 * 60 * 24,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
   },
 };
 
@@ -58,31 +63,13 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use((req, res, next) => {
+  // console.log(req.session);
   res.locals.currentUser = req.user;
+  // console.log(req.user);
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   next();
 });
-
-const validateHotel = (req, res, next) => {
-  const { error } = hotelSchema.validate(req.body);
-  if (error) {
-    const msg = error.details.map((el) => el.message).join(",");
-    throw new ExpressError(msg, 400);
-  } else {
-    next();
-  }
-};
-
-const validateReview = (req, res, next) => {
-  const { error } = reviewSchema.validate(req.body);
-  if (error) {
-    const msg = error.details.map((el) => el.message).join(",");
-    throw new ExpressError(msg, 400);
-  } else {
-    next();
-  }
-};
 
 app.get("/", (req, res) => {
   res.render("home");
@@ -92,6 +79,7 @@ app.get(
   "/hotels",
   catchAsync(async (req, res) => {
     const hotels = await Hotel.find({});
+    // console.log(hotels);
     res.render("hotels/index", { hotels });
   })
 );
@@ -108,6 +96,7 @@ app.post(
     // if (!req.body.hotel) throw new ExpressError("Invalid Hotel Data", 404);
 
     const newHotel = new Hotel(req.body.hotel);
+    newHotel.author = req.user._id;
     await newHotel.save();
     req.flash("success", "New hotel created!");
     res.redirect(`/hotels/${newHotel._id}`);
@@ -158,10 +147,12 @@ app.post(
   passport.authenticate("local", {
     failureFlash: true,
     failureRedirect: "/login",
+    keepSessionInfo: true,
   }),
   (req, res) => {
     const redirectUrl = req.session.returnTo || "hotels";
     req.flash("success", "Welcome back");
+    delete req.session.returnTo;
     res.redirect(redirectUrl);
   }
 );
@@ -170,10 +161,13 @@ app.get(
   "/hotels/:id",
   catchAsync(async (req, res) => {
     const { id } = req.params;
-    const hotel = await Hotel.findById(id).populate("reviews");
+    const hotel = await Hotel.findById(id)
+      .populate("reviews")
+      .populate("author");
+    // console.log(hotel);
     if (!hotel) {
       req.flash("error", "Cannot find that hotel");
-      return res.redirect("/hotels");
+      return res.redirect("hotels");
     }
     res.render("hotels/show", { hotel });
   })
@@ -182,12 +176,13 @@ app.get(
 app.get(
   "/hotels/:id/edit",
   isLoggedIn,
+  isAuthor,
   catchAsync(async (req, res) => {
     const { id } = req.params;
     const hotel = await Hotel.findById(id);
     if (!hotel) {
       req.flash("error", "Cannot find that hotel");
-      return res.redirect("/hotels");
+      return res.redirect("hotels");
     }
     res.render("hotels/edit", { hotel });
   })
@@ -196,6 +191,7 @@ app.get(
 app.put(
   "/hotels/:id",
   isLoggedIn,
+  isAuthor,
   validateHotel,
   catchAsync(async (req, res) => {
     const { id } = req.params;
@@ -208,6 +204,7 @@ app.put(
 app.delete(
   "/hotels/:id",
   isLoggedIn,
+  isAuthor,
   catchAsync(async (req, res) => {
     const { id } = req.params;
     await Hotel.findByIdAndDelete(id);
@@ -237,6 +234,11 @@ app.delete(
   catchAsync(async (req, res) => {
     const { id, reviewId } = req.params;
     // console.log(reviewId);
+    const hotel = await Hotel.findById(id);
+    if (!hotel.author.equals(req.user._id)) {
+      req.flash("error", "You dont have permission");
+      return res.redirect(`/hotels/${id}`);
+    }
     await Hotel.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
     await Review.findByIdAndDelete(reviewId);
     req.flash("success", "Deleted review!");

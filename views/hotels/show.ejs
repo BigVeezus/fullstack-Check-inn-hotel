@@ -19,13 +19,16 @@
         alt="..."
       />
       <div class="card-body">
-        <h5 class="card-title"><%= hotel.title %></h5>
+        <h5 class="card-title"><%= hotel.title %> </h5>
         <p class="card-text"><%= hotel.description %></p>
       </div>
       <ul class="list-group list-group-flush">
         <li class="list-group-item"><%= hotel.location %></li>
         <li class="list-group-item">$<%= hotel.price %>/night</li>
+        <li class="list-group-item"> <b>Uploaded by <%= hotel.author.username %></b></li>
       </ul>
+
+      <% if(currentUser && hotel.author.equals(currentUser._id)) { %>
       <div class="card-body">
         <a
           href="/hotels/<%= hotel._id %>/edit"
@@ -40,6 +43,8 @@
           <button class="btn btn-danger" type="button" data-mdb-toggle="modal" data-mdb-target="#exampleModal2">Delete</button>
         </form>
       </div>
+      <% } %>
+      <br>
       <a href="/hotels">Back to all Hotels</a>
     </div>
   </div>
@@ -81,9 +86,13 @@
         <div class="card-body">
           <h5 class="card-title">Rating: <%= review.rating %> stars</h5>
           <p class="card-text">Comment: <%= review.body %></p>
+          
+          <% if(currentUser && hotel.author.equals(currentUser._id)) { %>
           <form action="" method="">
             <button class="btn btn-sm btn-danger" type="button" data-mdb-toggle="modal" data-mdb-target="#exampleModal<%= review._id %>">Delete</button>
           </form>
+          <% } %>
+
         </div>
       </div>
     <% } %>
