@@ -17,6 +17,7 @@
         src="<%= hotel.image %>"
         class="card-img-top"
         alt="..."
+        style="width:500px;height:300px;"
       />
       <div class="card-body">
         <h5 class="card-title"><%= hotel.title %> </h5>
@@ -25,7 +26,7 @@
       <ul class="list-group list-group-flush">
         <li class="list-group-item"><%= hotel.location %></li>
         <li class="list-group-item">$<%= hotel.price %>/night</li>
-        <li class="list-group-item"> <b>Uploaded by <%= hotel.author.username %></b></li>
+        <li class="list-group-item"> <b>Hotel uploaded by <%= hotel.author.username %></b></li>
       </ul>
 
       <% if(currentUser && hotel.author.equals(currentUser._id)) { %>
@@ -48,6 +49,7 @@
       <a href="/hotels">Back to all Hotels</a>
     </div>
   </div>
+  <% if(currentUser) {%>
   <div class="col-6">
     <h2>Leave a Review</h2>
       <form
@@ -84,10 +86,15 @@
       <% for(let review of hotel.reviews) { %>
       <div class="card mb-3">
         <div class="card-body">
-          <h5 class="card-title">Rating: <%= review.rating %> stars</h5>
-          <p class="card-text">Comment: <%= review.body %></p>
-          
-          <% if(currentUser && hotel.author.equals(currentUser._id)) { %>
+
+         <h5 class="card-title">
+          <img src="https://ionicframework.com/docs/img/demos/avatar.svg" alt="" style="width:45px;height:50px;">
+          <b><%= review.author.username %> </b> </h5>
+
+        <p class="card-text"> <%= review.rating %> stars</p>
+        <p class="card-text"> <%= review.body %></p>
+
+          <% if(currentUser && review.author.equals(currentUser._id)) { %>
           <form action="" method="">
             <button class="btn btn-sm btn-danger" type="button" data-mdb-toggle="modal" data-mdb-target="#exampleModal<%= review._id %>">Delete</button>
           </form>
@@ -95,6 +102,43 @@
 
         </div>
       </div>
+    <% } %>
+    </div>
+<% } else {%>
+<% if(hotel.reviews <= 0){ %>
+  
+   <div class="col-6">
+    <h2>This hotel has no reviews yet</h2>
+    <p> <a href="/login"> Log-in to leave a review</a></p>
+
+
+  <% } %>
+  <div class="col-6">
+  <% for(let review of hotel.reviews) { %>
+    <div class="card mb-3">
+      <div class="card-body">
+        <h5 class="card-title">
+          <img src="https://ionicframework.com/docs/img/demos/avatar.svg" alt="" style="width:45px;height:50px;">
+          <b><%= review.author.username %> </b> </h5>
+
+        <p class="card-text"> <%= review.rating %> stars</p>
+        <p class="card-text"> <%= review.body %></p>
+        
+        <% if(currentUser && review.author.equals(currentUser._id)) { %>
+        <form action="" method="">
+          <button class="btn btn-sm btn-danger" type="button" data-mdb-toggle="modal" data-mdb-target="#exampleModal<%= review._id %>">Delete</button>
+        </form>
+        <% } %>
+
+      </div>
+    </div>
+  <% } %>
+</div>
+  
+  
+  <!-- <div class="col-6">
+    <h2>This hotel has no reviews yet</h2>
+    <p> <a href="/login"> Log-in to leave a review</a></p> -->
     <% } %>
     </div>
   </div>

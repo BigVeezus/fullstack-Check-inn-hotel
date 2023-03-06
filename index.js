@@ -17,6 +17,7 @@ const {
   isAuthor,
   validateHotel,
   validateReview,
+  isReviewAuthor,
 } = require("./middleware");
 const ExpressError = require("./utils/ExpressError");
 const Hotel = require("./model/hotel");
@@ -162,13 +163,14 @@ app.get(
   catchAsync(async (req, res) => {
     const { id } = req.params;
     const hotel = await Hotel.findById(id)
-      .populate("reviews")
+      .populate({ path: "reviews", populate: { path: "author" } })
       .populate("author");
     // console.log(hotel);
     if (!hotel) {
       req.flash("error", "Cannot find that hotel");
       return res.redirect("hotels");
     }
+    console.log(hotel);
     res.render("hotels/show", { hotel });
   })
 );
@@ -220,6 +222,7 @@ app.post(
   catchAsync(async (req, res) => {
     const hotel = await Hotel.findById(req.params.id);
     const review = new Review(req.body.review);
+    review.author = req.user._id;
     hotel.reviews.push(review);
     await review.save();
     await hotel.save();
@@ -231,14 +234,11 @@ app.post(
 app.delete(
   "/hotels/:id/reviews/:reviewId",
   isLoggedIn,
+  isReviewAuthor,
   catchAsync(async (req, res) => {
     const { id, reviewId } = req.params;
     // console.log(reviewId);
     const hotel = await Hotel.findById(id);
-    if (!hotel.author.equals(req.user._id)) {
-      req.flash("error", "You dont have permission");
-      return res.redirect(`/hotels/${id}`);
-    }
     await Hotel.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
     await Review.findByIdAndDelete(reviewId);
     req.flash("success", "Deleted review!");
