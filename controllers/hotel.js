@@ -58,7 +58,7 @@ module.exports.logoutUser = (req, res) => {
 
 module.exports.loginUser = (req, res) => {
   const redirectUrl = req.session.returnTo || "hotels";
-  console.log(redirectUrl);
+  // console.log(redirectUrl);
   req.flash("success", "Welcome back");
   delete req.session.returnTo;
   res.redirect(redirectUrl);
