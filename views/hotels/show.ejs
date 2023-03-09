@@ -25,7 +25,7 @@
       </div>
       <ul class="list-group list-group-flush">
         <li class="list-group-item"><%= hotel.location %></li>
-        <li class="list-group-item">$<%= hotel.price %>/night</li>
+        <li class="list-group-item"> $<%= hotel.price %>/night</li>
         <li class="list-group-item"> <b>Hotel uploaded by <%= hotel.author.username %></b></li>
       </ul>
 
@@ -109,7 +109,10 @@
   
    <div class="col-6">
     <h2>This hotel has no reviews yet</h2>
-    <p> <a href="/login"> Log-in to leave a review</a></p>
+    <form action="/login" method="get">
+      <button class="btn btn-sm btn-secondary" type="button submit">Log-in to leave a review</button>
+    </form>
+    <!-- <p> <a href=/hotels/<%= hotel.id %>/reviews> Log-in to leave a review</a></p> -->
 
 
   <% } %>
@@ -121,7 +124,8 @@
           <img src="https://ionicframework.com/docs/img/demos/avatar.svg" alt="" style="width:45px;height:50px;">
           <b><%= review.author.username %> </b> </h5>
 
-        <p class="card-text"> <%= review.rating %> stars</p>
+        <p class="card-text"> <%= review.rating %> stars
+        </p>
         <p class="card-text"> <%= review.body %></p>
         
         <% if(currentUser && review.author.equals(currentUser._id)) { %>

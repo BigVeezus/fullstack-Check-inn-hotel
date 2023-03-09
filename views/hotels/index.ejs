@@ -1,5 +1,5 @@
 <% layout('./layouts/boilerplate') %>
-<h1>All Hotels</h1>
+<h1>All listing of Hotels</h1>
 <div>
   <a href="/hotels/new">Add New Hotel</a>
 </div>
@@ -7,14 +7,19 @@
 <div class="card" mb-3>
   <div class="row">
     <div class="col-md-4">
-      <img class="img-fluid" alt="" src="<%= hotel.image %>" />
+      <img
+        class="img-fluid"
+        alt=""
+        src="<%= hotel.image %>"
+        style="width: 500px; height: 300px"
+      />
     </div>
     <div class="col-md-8">
       <div class="card-body">
         <h5 class="card-title"><%= hotel.title %></h5>
         <p class="card-text"><%= hotel.description %></p>
         <p class="card-text">
-          <small class="text-muted">$<%= hotel.price %> </small>
+          <small class="text-muted"> <b>$<%= hotel.price %> </b></small>
         </p>
         <a class="btn btn-primary" href="/hotels/<%= hotel._id %> ">View</a>
       </div>

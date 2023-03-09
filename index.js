@@ -12,6 +12,8 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const { hotelSchema, reviewSchema } = require("./schemas");
 const catchAsync = require("./utils/catchAsync");
+const hotelController = require("./controllers/hotel");
+const reviewController = require("./controllers/reviews");
 const {
   isLoggedIn,
   isAuthor,
@@ -23,6 +25,7 @@ const ExpressError = require("./utils/ExpressError");
 const Hotel = require("./model/hotel");
 const Review = require("./model/review");
 const User = require("./model/user");
+const hotel = require("./model/hotel");
 
 mongoose.connect("mongodb://localhost:27017/check-inn", {
   useNewUrlParser: true,
@@ -76,72 +79,24 @@ app.get("/", (req, res) => {
   res.render("home");
 });
 
-app.get(
-  "/hotels",
-  catchAsync(async (req, res) => {
-    const hotels = await Hotel.find({});
-    // console.log(hotels);
-    res.render("hotels/index", { hotels });
-  })
-);
+app.get("/hotels", catchAsync(hotelController.index));
 
-app.get("/hotels/new", isLoggedIn, (req, res) => {
-  res.render("hotels/new");
-});
+app.get("/hotels/new", isLoggedIn, hotelController.new);
 
 app.post(
   "/hotels",
   isLoggedIn,
   validateHotel,
-  catchAsync(async (req, res, next) => {
-    // if (!req.body.hotel) throw new ExpressError("Invalid Hotel Data", 404);
-
-    const newHotel = new Hotel(req.body.hotel);
-    newHotel.author = req.user._id;
-    await newHotel.save();
-    req.flash("success", "New hotel created!");
-    res.redirect(`/hotels/${newHotel._id}`);
-  })
+  catchAsync(hotelController.addHotel)
 );
 
-app.get("/register", async (req, res) => {
-  res.render("users/register");
-});
+app.get("/register", hotelController.registerUserForm);
 
-app.post(
-  "/register",
-  catchAsync(async (req, res) => {
-    try {
-      const { email, username, password } = req.body;
-      const user = new User({ email, username });
-      const registeredUser = await User.register(user, password);
-      // console.log(registerUser);
-      req.login(registeredUser, (err) => {
-        if (err) return next(err);
-        req.flash("success", "Welcome to Check-Inn");
-        res.redirect("/hotels");
-      });
-    } catch (e) {
-      req.flash("error", e.message);
-      res.redirect("register");
-    }
-  })
-);
+app.post("/register", catchAsync(hotelController.registerUser));
 
-app.get("/login", (req, res) => {
-  res.render("users/login");
-});
+app.get("/login", hotelController.renderLogin);
 
-app.get("/logout", (req, res) => {
-  req.logout(function (err) {
-    if (err) {
-      req.flash("sucess", "Could not log you out");
-      return res.redirect("hotels");
-    }
-    req.flash("success", "You have been logged out.");
-    return res.redirect("/login");
-  });
-});
+app.get("/logout", hotelController.logoutUser);
 
 app.post(
   "/login",
@@ -150,44 +105,16 @@ app.post(
     failureRedirect: "/login",
     keepSessionInfo: true,
   }),
-  (req, res) => {
-    const redirectUrl = req.session.returnTo || "hotels";
-    req.flash("success", "Welcome back");
-    delete req.session.returnTo;
-    res.redirect(redirectUrl);
-  }
+  hotelController.loginUser
 );
 
-app.get(
-  "/hotels/:id",
-  catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const hotel = await Hotel.findById(id)
-      .populate({ path: "reviews", populate: { path: "author" } })
-      .populate("author");
-    // console.log(hotel);
-    if (!hotel) {
-      req.flash("error", "Cannot find that hotel");
-      return res.redirect("hotels");
-    }
-    console.log(hotel);
-    res.render("hotels/show", { hotel });
-  })
-);
+app.get("/hotels/:id", catchAsync(hotelController.getOneHotel));
 
 app.get(
   "/hotels/:id/edit",
   isLoggedIn,
   isAuthor,
-  catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const hotel = await Hotel.findById(id);
-    if (!hotel) {
-      req.flash("error", "Cannot find that hotel");
-      return res.redirect("hotels");
-    }
-    res.render("hotels/edit", { hotel });
-  })
+  catchAsync(hotelController.renderEditPage)
 );
 
 app.put(
@@ -195,55 +122,34 @@ app.put(
   isLoggedIn,
   isAuthor,
   validateHotel,
-  catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const hotel = await Hotel.findByIdAndUpdate(id, { ...req.body.hotel });
-    req.flash("success", "Successfully updated Hotel");
-    res.redirect(`/hotels/${hotel._id}`);
-  })
+  catchAsync(hotelController.updateHotel)
 );
 
 app.delete(
   "/hotels/:id",
   isLoggedIn,
   isAuthor,
-  catchAsync(async (req, res) => {
-    const { id } = req.params;
-    await Hotel.findByIdAndDelete(id);
-    req.flash("success", "Deleted Hotel");
-    res.redirect("/hotels");
-  })
+  catchAsync(hotelController.deleteHotel)
 );
+
+// app.get("/hotels/:id/reviews", isLoggedIn, catchAsync, async (req, res) => {
+//   const { id } = req.params;
+//   const hotel = await Hotel.findById(id);
+//   res.redirect(`/hotels/${hotel._id}`);
+// });
 
 app.post(
   "/hotels/:id/reviews",
   isLoggedIn,
   validateReview,
-  catchAsync(async (req, res) => {
-    const hotel = await Hotel.findById(req.params.id);
-    const review = new Review(req.body.review);
-    review.author = req.user._id;
-    hotel.reviews.push(review);
-    await review.save();
-    await hotel.save();
-    req.flash("success", "Created review");
-    res.redirect(`/hotels/${hotel._id}`);
-  })
+  catchAsync(reviewController.addReview)
 );
 
 app.delete(
   "/hotels/:id/reviews/:reviewId",
   isLoggedIn,
   isReviewAuthor,
-  catchAsync(async (req, res) => {
-    const { id, reviewId } = req.params;
-    // console.log(reviewId);
-    const hotel = await Hotel.findById(id);
-    await Hotel.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
-    await Review.findByIdAndDelete(reviewId);
-    req.flash("success", "Deleted review!");
-    res.redirect(`/hotels/${id}`);
-  })
+  catchAsync(reviewController.deleteReview)
 );
 
 app.all("*", (req, res, next) => {
