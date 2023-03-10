@@ -137,6 +137,7 @@ app.put(
   "/hotels/:id",
   isLoggedIn,
   isAuthor,
+  upload.array("image"),
   validateHotel,
   catchAsync(hotelController.updateHotel)
 );
