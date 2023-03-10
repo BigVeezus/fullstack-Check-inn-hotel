@@ -1,3 +1,9 @@
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+
+// console.log(process.env.SECRET);
+
 const express = require("express");
 const app = express();
 const port = 3000;
@@ -22,6 +28,9 @@ const {
   isReviewAuthor,
 } = require("./middleware");
 const ExpressError = require("./utils/ExpressError");
+const { storage } = require("./cloudinary/index");
+const multer = require("multer");
+const upload = multer({ storage });
 const Hotel = require("./model/hotel");
 const Review = require("./model/review");
 const User = require("./model/user");
@@ -80,6 +89,11 @@ app.get("/", (req, res) => {
   res.render("home");
 });
 
+app.post("/", upload.array("image"), (req, res) => {
+  console.log(req.body, req.file);
+  res.send("IT WORKED");
+});
+
 app.get("/hotels", catchAsync(hotelController.index));
 
 app.get("/hotels/new", isLoggedIn, hotelController.new);
@@ -87,6 +101,7 @@ app.get("/hotels/new", isLoggedIn, hotelController.new);
 app.post(
   "/hotels",
   isLoggedIn,
+  upload.array("image"),
   validateHotel,
   catchAsync(hotelController.addHotel)
 );

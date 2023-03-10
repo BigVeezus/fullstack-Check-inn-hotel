@@ -14,8 +14,13 @@ module.exports.addHotel = async (req, res, next) => {
   // if (!req.body.hotel) throw new ExpressError("Invalid Hotel Data", 404);
 
   const newHotel = new Hotel(req.body.hotel);
+  newHotel.images = req.files.map((f) => ({
+    url: f.path,
+    filename: f.filename,
+  }));
   newHotel.author = req.user._id;
   await newHotel.save();
+  console.log(newHotel);
   req.flash("success", "New hotel created!");
   res.redirect(`/hotels/${newHotel._id}`);
 };
