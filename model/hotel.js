@@ -3,9 +3,18 @@ const Review = require("./review");
 mongoose.set("strictQuery", false);
 const Schema = mongoose.Schema;
 
+const ImageSchema = new Schema({
+  url: String,
+  filename: String,
+});
+
+ImageSchema.virtual("thumbnail").get(function () {
+  return this.url.replace("/upload", "/upload/w_200");
+});
+
 const hotelSchema = new Schema({
   title: String,
-  images: [{ url: String, filename: String }],
+  images: [ImageSchema],
   price: Number,
   description: String,
   location: String,

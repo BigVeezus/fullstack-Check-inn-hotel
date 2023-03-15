@@ -1,6 +1,7 @@
 const flash = require("connect-flash");
 const Hotel = require("../model/hotel");
 const User = require("../model/user");
+const { cloudinary } = require("../cloudinary/index");
 
 module.exports.index = async (req, res) => {
   const hotels = await Hotel.find({});
@@ -97,10 +98,22 @@ module.exports.renderEditPage = async (req, res) => {
 
 module.exports.updateHotel = async (req, res) => {
   const { id } = req.params;
+  // console.log(req.body);
   const hotel = await Hotel.findByIdAndUpdate(id, { ...req.body.hotel });
   const imgs = req.files.map((f) => ({ url: f.path, filename: f.filename }));
   hotel.images.push(...imgs);
+
   await hotel.save();
+  if (req.body.deleteImages) {
+    for (let filename of req.body.deleteImages) {
+      await cloudinary.uploader.destroy(filename);
+    }
+    await hotel.updateOne({
+      $pull: { images: { filename: { $in: req.body.deleteImages } } },
+    });
+    console.log(hotel);
+  }
+
   req.flash("success", "Successfully updated Hotel");
   res.redirect(`/hotels/${hotel._id}`);
 };

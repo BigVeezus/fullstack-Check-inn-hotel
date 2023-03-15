@@ -30,11 +30,11 @@
 
     <div class="card mb-3">
       <div class="card-body">
-        <h5 class="card-title"><%= hotel.title %> </h5>
+        <h3 class="card-title"><%= hotel.title %> </h3>
         <p class="card-text"><%= hotel.description %></p>
       </div>
       <ul class="list-group list-group-flush">
-        <li class="list-group-item"><%= hotel.location %></li>
+        <li class="list-group-item">Located @ <%= hotel.location %></li>
         <li class="list-group-item"> $<%= hotel.price %>/night</li>
         <li class="list-group-item"> <b>Hotel uploaded by <%= hotel.author.username %></b></li>
       </ul>
@@ -46,9 +46,9 @@
           class="card-link btn btn-warning"
           >Edit Hotel</a
         >
-        <a href="" class="card-link btn btn-primary">
+        <!-- <a href="" class="card-link btn btn-primary">
           Manage Photos
-        </a>
+        </a> -->
         <form
           class="d-inline"
           action=""
