@@ -1,5 +1,8 @@
 const flash = require("connect-flash");
 const Hotel = require("../model/hotel");
+const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
+const mapBoxToken = process.env.MAPBOX_TOKEN;
+const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 const User = require("../model/user");
 const { cloudinary } = require("../cloudinary/index");
 
@@ -15,8 +18,15 @@ module.exports.new = (req, res) => {
 
 module.exports.addHotel = async (req, res, next) => {
   // if (!req.body.hotel) throw new ExpressError("Invalid Hotel Data", 404);
-
+  const geoData = await geocoder
+    .forwardGeocode({
+      query: req.body.hotel.location,
+      countries: ["ng"],
+      limit: 5,
+    })
+    .send();
   const newHotel = new Hotel(req.body.hotel);
+  newHotel.geometry = geoData.body.features[0].geometry;
   newHotel.images = req.files.map((f) => ({
     url: f.path,
     filename: f.filename,

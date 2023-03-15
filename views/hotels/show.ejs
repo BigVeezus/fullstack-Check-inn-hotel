@@ -5,10 +5,14 @@
 <!-- <button type="button" class="btn btn-primary" data-mdb-toggle="modal" data-mdb-target="#exampleModal">
   Launch demo modal
 </button> -->
+<script>
+  const mapToken = '<%-process.env.MAP_BOX %>'
+  const hotel = <%- JSON.stringify(hotel)%>
+</script>
 
 <div class="row">
   <div class="col-6">
-
+    <div id="map" style="width: 635px; height: 300px;"></div>
     <div id="hotelcarousel" class="carousel slide" data-bs-ride="carousel">
       <div class="carousel-inner">
         <% hotel.images.forEach((img,i) => { %>
@@ -236,3 +240,7 @@
     </div>
   </div>
 </div> 
+
+<script src="/showPageMap.js">
+
+</script>
