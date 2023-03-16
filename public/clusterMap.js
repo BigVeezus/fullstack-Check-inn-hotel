@@ -3,9 +3,9 @@ mapboxgl.accessToken =
 const map = new mapboxgl.Map({
   container: "map",
   // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
-  style: "mapbox://styles/mapbox/dark-v11",
+  style: "mapbox://styles/mapbox/light-v11",
   center: [-103.5917, 40.6699],
-  zoom: 3,
+  zoom: 4,
 });
 
 map.on("load", () => {
@@ -36,13 +36,13 @@ map.on("load", () => {
       "circle-color": [
         "step",
         ["get", "point_count"],
-        "#51bbd6",
-        100,
-        "#f1f075",
-        750,
-        "#f28cb1",
+        "#03A9f4",
+        3,
+        "#2196F3",
+        7,
+        "#3F51B5",
       ],
-      "circle-radius": ["step", ["get", "point_count"], 20, 100, 30, 750, 40],
+      "circle-radius": ["step", ["get", "point_count"], 30, 30, 50, 50, 90],
     },
   });
 
@@ -64,8 +64,8 @@ map.on("load", () => {
     source: "hotels",
     filter: ["!", ["has", "point_count"]],
     paint: {
-      "circle-color": "#11b4da",
-      "circle-radius": 20,
+      "circle-color": "blue",
+      "circle-radius": 12,
       "circle-stroke-width": 1,
       "circle-stroke-color": "#fff",
     },
@@ -92,9 +92,8 @@ map.on("load", () => {
   // the location of the feature, with
   // description HTML from its properties.
   map.on("click", "unclustered-point", (e) => {
+    const popUpText = e.features[0].properties.popUpMarkup;
     const coordinates = e.features[0].geometry.coordinates.slice();
-    const mag = e.features[0].properties.mag;
-    const tsunami = e.features[0].properties.tsunami === 1 ? "yes" : "no";
 
     // Ensure that if the map is zoomed out such that
     // multiple copies of the feature are visible, the
@@ -103,10 +102,7 @@ map.on("load", () => {
       coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
     }
 
-    new mapboxgl.Popup()
-      .setLngLat(coordinates)
-      .setHTML(`magnitude: ${mag}<br>Was there a tsunami?: ${tsunami}`)
-      .addTo(map);
+    new mapboxgl.Popup().setLngLat(coordinates).setHTML(popUpText).addTo(map);
   });
 
   map.on("mouseenter", "clusters", () => {
