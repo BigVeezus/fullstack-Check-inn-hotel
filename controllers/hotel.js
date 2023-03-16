@@ -21,7 +21,6 @@ module.exports.addHotel = async (req, res, next) => {
   const geoData = await geocoder
     .forwardGeocode({
       query: req.body.hotel.location,
-      countries: ["ng"],
       limit: 5,
     })
     .send();
