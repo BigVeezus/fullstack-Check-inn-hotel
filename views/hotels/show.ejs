@@ -1,5 +1,6 @@
 <% layout('./layouts/boilerplate') %>
 <link rel="stylesheet" type="text/css" href="../stars.css"/>
+<link rel="stylesheet" type="text/css" href="../app.css"/>
 
 <!-- Button trigger modal -->
 <!-- <button type="button" class="btn btn-primary" data-mdb-toggle="modal" data-mdb-target="#exampleModal">
@@ -12,7 +13,7 @@
 
 <div class="row">
   <div class="col-6">
-    <div id="map" style="width: 450px; height: 300px;"></div>
+    <div id="map"></div>
     <div id="hotelcarousel" class="carousel slide" data-bs-ride="carousel">
       <div class="carousel-inner">
         <% hotel.images.forEach((img,i) => { %>

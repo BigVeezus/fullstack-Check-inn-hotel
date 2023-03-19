@@ -1,7 +1,7 @@
 mapboxgl.accessToken =
   "pk.eyJ1IjoiYmlndmVlenVzIiwiYSI6ImNsZjk3dWhuYjAzODc0M251aDZra2x3YWIifQ.DNAwOhvuwW2bQoJPHLhZmA";
 const map = new mapboxgl.Map({
-  container: "map",
+  container: "cluster-map",
   // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
   style: "mapbox://styles/mapbox/light-v11",
   center: [-103.5917, 40.6699],
@@ -111,4 +111,10 @@ map.on("load", () => {
   map.on("mouseleave", "clusters", () => {
     map.getCanvas().style.cursor = "";
   });
+
+  // disable map zoom when using scroll
+  map.scrollZoom.disable();
+
+  // Add zoom and rotation controls to the map.
+  map.addControl(new mapboxgl.NavigationControl());
 });
