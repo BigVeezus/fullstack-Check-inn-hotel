@@ -1,5 +1,7 @@
 <% layout('layouts/boilerplate')%>
-<h1>Register</h1>
+<link rel="stylesheet" href="./style2.css" />
+
+<!-- <h1>Register</h1>
 <form action="/register" method="POST" class="validated-form" novalidate>
   <div class="mb-3">
     <label class="form-label" for="username">Username</label>
@@ -29,4 +31,71 @@
     <div class="valid-feedback">Looks good!</div>
   </div>
   <button class="btn btn-success">Register</button>
-</form>
+</form> -->
+
+<div class="box-form">
+  <div class="left">
+    <div class="overlay">
+      <h1>Find a home.</h1>
+      <p>Hotels with freedom built in.</p>
+      <span>
+        <p>register with social media</p>
+        <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+        <a href="#"
+          ><i class="fa fa-twitter" aria-hidden="true"></i> Sign up with
+          Twitter</a
+        >
+      </span>
+    </div>
+  </div>
+
+  <div class="right">
+    <h5>Register</h5>
+    <p>
+      Do you have an account already? <a href="/login">Login</a> to leave
+      comments and add properties of your own
+    </p>
+    <form action="/register" method="post" class="validated-form" novalidate>
+      <div class="inputs">
+        <input
+          type="text"
+          placeholder="user name"
+          id="username"
+          name="username"
+          autofocus
+          required
+        />
+        <br />
+        <input
+          type="email"
+          placeholder="email"
+          id="email"
+          name="email"
+          required
+        />
+        <br />
+        <input
+          type="password"
+          placeholder="password"
+          id="password"
+          name="password"
+          required
+        />
+      </div>
+
+      <br /><br />
+
+      <div class="remember-me--forget-password">
+        <!-- Angular -->
+        <!-- <label>
+        <input type="checkbox" name="item" checked />
+        <span class="text-checkbox">Remember me</span>
+      </label> -->
+        <p><a href=""> forget password?</a></p>
+      </div>
+
+      <br />
+      <button>Register</button>
+    </form>
+  </div>
+</div>
