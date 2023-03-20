@@ -21,6 +21,7 @@ const catchAsync = require("./utils/catchAsync");
 const hotelController = require("./controllers/hotel");
 const reviewController = require("./controllers/reviews");
 const mongoSanitize = require("express-mongo-sanitize");
+const helmet = require("helmet");
 const {
   isLoggedIn,
   isAuthor,
@@ -73,6 +74,15 @@ const sessionConfig = {
 
 app.use(session(sessionConfig));
 app.use(flash());
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: {
+      allowOrigins: ["*"],
+    },
+  })
+);
 
 app.use(passport.initialize());
 app.use(passport.session());
