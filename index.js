@@ -207,3 +207,5 @@ app.use((err, req, res, next) => {
 app.listen(port, () => {
   console.log("PORT NOW LISTENING ON 3000 G!");
 });
+
+module.exports = app;
