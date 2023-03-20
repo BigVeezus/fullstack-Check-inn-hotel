@@ -37,8 +37,14 @@ const Hotel = require("./model/hotel");
 const Review = require("./model/review");
 const User = require("./model/user");
 const hotel = require("./model/hotel");
+const MongoStore = require("connect-mongo");
+// live Mongo Db
+const mongoUrl = "mongodb://localhost:27017/check-inn";
 
-mongoose.connect("mongodb://localhost:27017/check-inn", {
+//local database
+// "mongodb://localhost:27017/check-inn"
+
+mongoose.connect(mongoUrl, {
   useNewUrlParser: true,
   autoIndex: true,
   useUnifiedTopology: true,
@@ -62,6 +68,10 @@ app.use(mongoSanitize());
 const sessionConfig = {
   name: "VizSessions",
   secret: "bettersecret",
+  store: MongoStore.create({
+    mongoUrl: mongoUrl,
+    touchAfter: 24 * 60 * 60,
+  }),
   resave: false,
   saveUninitialized: true,
   cookie: {
