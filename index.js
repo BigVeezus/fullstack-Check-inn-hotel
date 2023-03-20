@@ -39,7 +39,8 @@ const User = require("./model/user");
 const hotel = require("./model/hotel");
 const MongoStore = require("connect-mongo");
 // live Mongo Db
-const mongoUrl = process.env.MONGO_URL;
+const mongoUrl =
+  "mongodb+srv://bigveezus:himveezus@checkinn.tflolfp.mongodb.net/?retryWrites=true&w=majority";
 
 //local database
 // "mongodb://localhost:27017/check-inn"
@@ -207,5 +208,3 @@ app.use((err, req, res, next) => {
 app.listen(port, () => {
   console.log("PORT NOW LISTENING ON 3000 G!");
 });
-
-module.exports = app;

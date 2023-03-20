@@ -32,7 +32,7 @@ module.exports.addHotel = async (req, res, next) => {
   }));
   newHotel.author = req.user._id;
   await newHotel.save();
-  console.log(newHotel);
+  // console.log(newHotel);
   req.flash("success", "New hotel created!");
   res.redirect(`/hotels/${newHotel._id}`);
 };
@@ -120,7 +120,7 @@ module.exports.updateHotel = async (req, res) => {
     await hotel.updateOne({
       $pull: { images: { filename: { $in: req.body.deleteImages } } },
     });
-    console.log(hotel);
+    // console.log(hotel);
   }
 
   req.flash("success", "Successfully updated Hotel");
