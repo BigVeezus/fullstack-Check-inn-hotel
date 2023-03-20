@@ -39,7 +39,7 @@ const User = require("./model/user");
 const hotel = require("./model/hotel");
 const MongoStore = require("connect-mongo");
 // live Mongo Db
-const mongoUrl = "mongodb://localhost:27017/check-inn";
+const mongoUrl = process.env.MONGO_URL;
 
 //local database
 // "mongodb://localhost:27017/check-inn"
