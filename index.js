@@ -211,4 +211,8 @@ app.listen(port, () => {
   console.log("PORT NOW LISTENING ON 3000 G!");
 });
 
+app.use((res, req, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+});
+
 module.exports = app;
