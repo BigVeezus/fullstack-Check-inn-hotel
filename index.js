@@ -210,7 +210,7 @@ app.use((err, req, res, next) => {
 app.listen(port, () => {
   console.log("PORT NOW LISTENING ON 3000 G!");
 });
-
+// fixed git config shii
 app.use((res, req, next) => {
   res.header("Access-Control-Allow-Origin", "*");
 });
