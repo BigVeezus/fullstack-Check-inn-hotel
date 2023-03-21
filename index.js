@@ -11,6 +11,7 @@ const port = 3000;
 const path = require("path");
 const methodOverride = require("method-override");
 const mongoose = require("mongoose");
+const MongoStore = require("connect-mongo");
 const ejsMate = require("ejs-mate");
 const session = require("express-session");
 // const passport = require("passport");
@@ -38,7 +39,6 @@ const Hotel = require("./model/hotel");
 const Review = require("./model/review");
 const User = require("./model/user");
 const hotel = require("./model/hotel");
-const MongoStore = require("connect-mongo");
 // live Mongo Db
 const mongoUrl =
   "mongodb+srv://bigveezus:himveezus@checkinn.tflolfp.mongodb.net/?retryWrites=true&w=majority";
