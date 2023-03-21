@@ -1,7 +1,8 @@
 const flash = require("connect-flash");
 const Hotel = require("../model/hotel");
 const mbxGeocoding = require("@mapbox/mapbox-sdk/services/geocoding");
-const mapBoxToken = process.env.MAPBOX_TOKEN;
+const mapBoxToken =
+  "pk.eyJ1IjoiYmlndmVlenVzIiwiYSI6ImNsZjk3dWhuYjAzODc0M251aDZra2x3YWIifQ.DNAwOhvuwW2bQoJPHLhZmA";
 const geocoder = mbxGeocoding({ accessToken: mapBoxToken });
 const User = require("../model/user");
 const { cloudinary } = require("../cloudinary/index");
