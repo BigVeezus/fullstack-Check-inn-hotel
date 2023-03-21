@@ -5,6 +5,7 @@ if (process.env.NODE_ENV !== "production") {
 // console.log(process.env.SECRET);
 
 const express = require("express");
+const cors = require("cors");
 const app = express();
 const port = 3000;
 const path = require("path");
@@ -58,6 +59,7 @@ db.once("open", () => {
   console.log("Database connected!");
 });
 
+app.use(cors());
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -110,7 +112,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/", (req, res) => {
+app.get("/", cors(), (req, res) => {
   // console.log(req.query);
   res.render("home");
 });
@@ -208,3 +210,5 @@ app.use((err, req, res, next) => {
 app.listen(port, () => {
   console.log("PORT NOW LISTENING ON 3000 G!");
 });
+
+module.exports = app;
